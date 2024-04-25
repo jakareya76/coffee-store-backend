@@ -27,6 +27,9 @@ async function run() {
     await client.connect();
 
     const coffeeCollection = client.db("coffeeDB").collection("coffee");
+    const usersCollection = client.db("coffeeDB").collection("users");
+
+    // coffee related api
 
     app.get("/coffee", async (req, res) => {
       const cursur = coffeeCollection.find();
@@ -86,6 +89,33 @@ async function run() {
       const query = { _id: new ObjectId(id) };
 
       const result = await coffeeCollection.deleteOne(query);
+
+      res.send(result);
+    });
+
+    // users related api
+
+    app.get("/users", async (req, res) => {
+      const cursur = await usersCollection.find();
+
+      const users = await cursur.toArray();
+
+      res.send(users);
+    });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+
+      const result = await usersCollection.insertOne(user);
+
+      res.send(result);
+    });
+
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const result = await usersCollection.deleteOne(query);
 
       res.send(result);
     });
